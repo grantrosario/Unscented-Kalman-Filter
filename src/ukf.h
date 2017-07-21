@@ -30,9 +30,22 @@ public:
 
   ///* predicted sigma points matrix
   MatrixXd Xsig_pred_;
+  
+  ///* Process noise covariance matrix
+  MatrixXd Q_;
+  
+  ///* Laser measurement noise
+  MatrixXd R_laser_;
+  
+  ///* Radar measurement noise
+  MatrixXd R_radar_;
 
   ///* time when the state is true, in us
   long long time_us_;
+  
+  ///* NIS values
+  double NIS_radar_;
+  double NIS_laser_;
 
   ///* Process noise standard deviation longitudinal acceleration in m/s^2
   double std_a_;
@@ -63,9 +76,18 @@ public:
 
   ///* Augmented state dimension
   int n_aug_;
+  
+  ///* Number of sigma points
+  int n_sig_;
 
   ///* Sigma point spreading parameter
   double lambda_;
+  
+  ///* record of previous timestamp
+  long long prev_timestamp_ = 0;
+  
+  ///* Constant for minimum value
+  constexpr static float MINIMUM = 0.0001;
 
 
   /**
@@ -102,6 +124,18 @@ public:
    * @param meas_package The measurement at k+1
    */
   void UpdateRadar(MeasurementPackage meas_package);
+  
+  /**
+   * Normalizes an angle to be between -pi and pi
+   * @param *pValue The angle to be normalized
+   */
+  void NormAngle(double *pValue);
+  
+  /**
+   * Initialize the first values measured
+   * @param meas_package Measurement at k
+   */
+  void Init(MeasurementPackage meas_package);
 };
 
 #endif /* UKF_H */
